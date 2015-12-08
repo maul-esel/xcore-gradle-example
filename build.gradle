@@ -1,0 +1,78 @@
+plugins {
+  id "org.xtext.xtext" version "0.3.26" // used to build Xcore model
+  id "java"
+}
+
+group 'xcore-test'
+
+repositories {
+  mavenCentral()
+}
+
+/* * * * * Configuration for Xcore * * * * *
+Adapted from https://github.com/ghillairet/xcore-gradle-example */
+xtext {
+  version = '2.9+'
+  encoding = 'UTF-8'
+
+  sources {
+    srcDir 'src'
+  }
+
+  languages {
+    ecore {
+      setup = 'org.eclipse.xtext.ecore.EcoreSupport'
+    }
+    codegen {
+      setup = 'org.eclipse.emf.codegen.ecore.xtext.GenModelSupport'
+    }
+    xcore {
+      setup = 'org.eclipse.emf.ecore.xcore.XcoreStandaloneSetup'
+      consumesJava = true
+      output {
+        dir = 'xcore-gen'
+        producesJavaFor sourceSets.main
+      }
+    }
+  }
+}
+
+/* Java source code. 'xcore-gen' is added by the Xcore config above. */
+sourceSets {
+  main {
+    java {
+      srcDir 'src'
+    }
+  }
+}
+
+configurations {
+  xtextTooling.extendsFrom xcore // alias xtextTooling to xcore to prevent confusion
+}
+
+dependencies {
+  compile 'org.eclipse.xtext:org.eclipse.xtext.xtext:2.9+'
+  compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.9.+'
+  compile 'org.eclipse.emf:org.eclipse.emf.ecore.xcore.lib:1.1.100'
+
+  xcore 'org.eclipse.text:org.eclipse.text:3.5.101'
+  xcore 'org.eclipse.core:org.eclipse.core.resources:3.7.100'
+  xcore 'org.eclipse.xtext:org.eclipse.xtext.ecore:2.9.0'
+  xcore 'org.eclipse.emf:org.eclipse.emf.codegen.ecore.xtext:1.2.0'
+  xcore 'org.eclipse.emf:org.eclipse.emf.common:2.11+'
+  xcore 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11+'
+  xcore 'org.eclipse.emf:org.eclipse.emf.ecore.xcore:1.3.1'
+  xcore 'org.eclipse.emf:org.eclipse.emf.ecore.xcore.lib:1.1.100'
+  xcore 'org.eclipse.emf:org.eclipse.emf.codegen:2.10+'
+  xcore 'org.eclipse.emf:org.eclipse.emf.codegen.ecore:2.11+'
+}
+
+/* delete generated code */
+clean {
+  delete 'xcore-gen'
+}
+
+/* generate Xcore model using Xtext plugin */
+task(generateModel).dependsOn xtextGenerate
+
+compileJava.dependsOn generateModel

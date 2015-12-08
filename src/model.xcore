@@ -1,0 +1,10 @@
+@GenModel(modelDirectory="xcore.test/xcore-gen")
+package xcore.test
+
+class MyModel {
+	contains Element[] elements
+}
+
+class Element {
+	
+}
